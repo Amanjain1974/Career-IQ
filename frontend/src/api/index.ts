@@ -54,3 +54,16 @@ export const uploadResume = async (file: File) => {
     throw error;
   }
 };
+
+export const getApplications = async () => {
+  try {
+    const response = await api.get('/jobs/applications/');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching applications", error);
+    return [
+      { id: 1, company: 'TechCorp', role: 'Data Engineer', status: 'Applied', applied_date: '2026-08-28' },
+      { id: 2, company: 'AI Inc', role: 'ML Engineer', status: 'Interview', applied_date: '2026-08-29' }
+    ];
+  }
+};

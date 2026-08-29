@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import { HomeIcon, UserIcon, BriefcaseIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserIcon, BriefcaseIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 
 export default function Layout() {
   return (
@@ -25,6 +25,10 @@ export default function Layout() {
           <Link to="/applications" className="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600">
             <DocumentTextIcon className="w-5 h-5 mr-3" />
             Applications
+          </Link>
+          <Link to="/analytics" className="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600">
+            <ChartBarIcon className="w-5 h-5 mr-3" />
+            Analytics
           </Link>
         </nav>
       </aside>

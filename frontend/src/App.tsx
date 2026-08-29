@@ -5,6 +5,8 @@ import Profile from './pages/Profile';
 import Jobs from './pages/Jobs';
 import Applications from './pages/Applications';
 
+import Analytics from './pages/Analytics';
+
 function App() {
   return (
     <Router>
@@ -14,6 +16,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="jobs" element={<Jobs />} />
           <Route path="applications" element={<Applications />} />
+          <Route path="analytics" element={<Analytics />} />
         </Route>
       </Routes>
     </Router>
