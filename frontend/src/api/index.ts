@@ -38,3 +38,19 @@ export const getJobs = async () => {
     ];
   }
 };
+
+export const uploadResume = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  try {
+    const response = await api.post('/candidates/resumes/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading resume", error);
+    throw error;
+  }
+};
