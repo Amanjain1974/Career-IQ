@@ -87,3 +87,13 @@ export const getApplications = async () => {
     ];
   }
 };
+
+export const updateApplicationStatus = async (id: number, status: string) => {
+  try {
+    const response = await api.patch(`/jobs/applications/${id}/`, { status });
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating application ${id}`, error);
+    throw error;
+  }
+};
