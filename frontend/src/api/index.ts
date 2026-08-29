@@ -7,6 +7,26 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const login = async (email: string, password: string) => {
+  const response = await api.post('/token/', { email, password });
+  localStorage.setItem('access_token', response.data.access);
+  localStorage.setItem('refresh_token', response.data.refresh);
+  return response.data;
+};
+
+export const logout = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+};
+
 export const getDashboardStats = async () => {
   try {
     const response = await api.get('/analytics/dashboard/');
