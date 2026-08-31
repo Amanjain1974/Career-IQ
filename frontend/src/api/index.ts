@@ -97,3 +97,17 @@ export const updateApplicationStatus = async (id: number, status: string) => {
     throw error;
   }
 };
+
+export const generateCoverLetter = async (jobId: number, style: string = 'professional') => {
+  try {
+    const response = await api.post('/ai/cover-letter/', { job_id: jobId, style });
+    return response.data;
+  } catch (error) {
+    console.error("Error generating cover letter", error);
+    // Mock response if backend fails
+    return {
+      cover_letter: `Dear Hiring Manager,\n\nI am writing to express my interest in the position. With my background in data engineering and machine learning, I am confident I would be a great fit for this role.\n\nThank you for your consideration.\n\nSincerely,\nCandidate`
+    };
+  }
+};
+

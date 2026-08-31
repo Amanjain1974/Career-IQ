@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { getApplications, updateApplicationStatus } from '../api';
+import CoverLetterGenerator from '../components/CoverLetterGenerator';
 
 const COLUMNS = ['Saved', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
 export default function Applications() {
   const [applications, setApplications] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
+  const [selectedApp, setSelectedApp] = useState<any>(null);
 
   useEffect(() => {
     getApplications().then(data => setApplications(data));
@@ -87,7 +89,13 @@ export default function Applications() {
                               className="bg-white p-4 rounded-lg shadow mb-3 border border-gray-200"
                             >
                               <h3 className="font-medium text-gray-900">{app.role}</h3>
-                              <p className="text-sm text-gray-500">{app.company}</p>
+                              <p className="text-sm text-gray-500 mb-2">{app.company}</p>
+                              <button 
+                                onClick={() => setSelectedApp(app)}
+                                className="text-xs text-indigo-600 hover:text-indigo-800"
+                              >
+                                Generate Cover Letter
+                              </button>
                             </div>
                           )}
                         </Draggable>
@@ -108,6 +116,7 @@ export default function Applications() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -120,11 +129,28 @@ export default function Applications() {
                       {app.status || 'Saved'}
                     </span>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button 
+                      onClick={() => setSelectedApp(app)}
+                      className="text-indigo-600 hover:text-indigo-900"
+                    >
+                      Cover Letter
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      )}
+
+      {selectedApp && (
+        <CoverLetterGenerator 
+          jobId={selectedApp.id}
+          companyName={selectedApp.company}
+          roleTitle={selectedApp.role}
+          onClose={() => setSelectedApp(null)}
+        />
       )}
     </div>
   );
