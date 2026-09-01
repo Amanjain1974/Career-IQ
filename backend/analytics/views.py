@@ -18,6 +18,10 @@ def dashboard_stats(request):
     
     interview_rate = (interviews / total_apps * 100) if total_apps > 0 else 0
     
+    # Calculate average fit score
+    from django.db.models import Avg
+    avg_score = applications.aggregate(Avg('match_score'))['match_score__avg'] or 0
+    
     return Response({
         "total_applications": total_apps,
         "interviews": interviews,
@@ -25,5 +29,5 @@ def dashboard_stats(request):
         "offers": offers,
         "interview_rate": round(interview_rate, 2),
         "most_common_skill_gaps": ["Airflow", "Kafka", "Kubernetes"],
-        "average_fit_score": 84.5
+        "average_fit_score": round(avg_score, 1)
     })

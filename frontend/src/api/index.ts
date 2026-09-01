@@ -53,8 +53,9 @@ export const getJobs = async () => {
   } catch (error) {
     console.error("Error fetching jobs", error);
     return [
-      { id: 1, title: 'Data Engineer (Mock)', company: 'TechCorp', match: '94%', location: 'Remote' },
-      { id: 2, title: 'ML Engineer (Mock)', company: 'AI Inc', match: '91%', location: 'SF' },
+      { id: 1, title: 'Data Engineer (Mock)', company: 'TechCorp', match: '94%', location: 'Remote', risk_score: 'LOW RISK' },
+      { id: 2, title: 'ML Engineer (Mock)', company: 'AI Inc', match: '91%', location: 'SF', risk_score: 'LOW RISK' },
+      { id: 3, title: 'Data Entry (Mock)', company: 'Unknown', match: '40%', location: 'Remote', risk_score: 'HIGH RISK', risk_reason: 'Asks for banking details upfront.' },
     ];
   }
 };
@@ -201,6 +202,19 @@ export const generateInterviewPrep = async (jobId: number) => {
     };
   }
 };
+
+export const getReminders = async () => {
+  try {
+    const response = await api.get('/jobs/applications/reminders/');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching reminders", error);
+    return [
+      { id: 99, company: 'Stark Industries', role: 'Avenger Engineer', follow_up_date: '2026-09-01' }
+    ];
+  }
+};
+
 
 
 
