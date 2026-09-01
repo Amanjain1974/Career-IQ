@@ -11,6 +11,9 @@ class CandidateProfile(models.Model):
     summary = models.TextField(blank=True)
     target_salary = models.CharField(max_length=100, blank=True)
     target_roles = models.CharField(max_length=255, blank=True)
+    linkedin_url = models.URLField(blank=True)
+    github_url = models.URLField(blank=True)
+    portfolio_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -9,6 +9,9 @@ export default function Settings() {
   const [email, setEmail] = useState('');
   const [targetSalary, setTargetSalary] = useState('');
   const [targetRoles, setTargetRoles] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [github, setGithub] = useState('');
+  const [portfolio, setPortfolio] = useState('');
   const [message, setMessage] = useState('');
   const [profileMessage, setProfileMessage] = useState('');
   const { logout } = useAuth();
@@ -25,6 +28,9 @@ export default function Settings() {
         setProfile(data[0]);
         setTargetSalary(data[0].target_salary || '');
         setTargetRoles(data[0].target_roles || '');
+        setLinkedin(data[0].linkedin_url || '');
+        setGithub(data[0].github_url || '');
+        setPortfolio(data[0].portfolio_url || '');
       }
     }).catch(err => console.error("Error fetching profile", err));
   }, []);
@@ -43,10 +49,16 @@ export default function Settings() {
     e.preventDefault();
     if (!profile) return;
     try {
-      await updateCandidateProfile(profile.id, { target_salary: targetSalary, target_roles: targetRoles });
-      setProfileMessage('Career goals updated successfully.');
+      await updateCandidateProfile(profile.id, { 
+        target_salary: targetSalary, 
+        target_roles: targetRoles,
+        linkedin_url: linkedin,
+        github_url: github,
+        portfolio_url: portfolio
+      });
+      setProfileMessage('Profile updated successfully.');
     } catch (err) {
-      setProfileMessage('Failed to update goals.');
+      setProfileMessage('Failed to update profile.');
     }
   };
 
@@ -135,9 +147,36 @@ export default function Settings() {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">LinkedIn URL</label>
+              <input 
+                type="url" 
+                value={linkedin} 
+                onChange={e => setLinkedin(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">GitHub URL</label>
+              <input 
+                type="url" 
+                value={github} 
+                onChange={e => setGithub(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Portfolio URL</label>
+              <input 
+                type="url" 
+                value={portfolio} 
+                onChange={e => setPortfolio(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+              />
+            </div>
             {profileMessage && <p className="text-sm text-green-600">{profileMessage}</p>}
             <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-              Save Career Goals
+              Save Profile
             </button>
           </form>
         </div>
