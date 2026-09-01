@@ -15,7 +15,8 @@ const AddJobModal: React.FC<AddJobModalProps> = ({ onClose, onSuccess }) => {
     description: '',
     work_mode: 'Remote',
     salary_min: '',
-    salary_max: ''
+    salary_max: '',
+    source: 'Manual'
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -56,13 +57,28 @@ const AddJobModal: React.FC<AddJobModalProps> = ({ onClose, onSuccess }) => {
         </div>
         
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Company</label>
-            <input 
-              type="text" required name="company"
-              value={formData.company} onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            />
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">Company</label>
+              <input 
+                type="text" required name="company"
+                value={formData.company} onChange={handleChange}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">Source</label>
+              <select 
+                name="source" value={formData.source} onChange={handleChange}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="Manual">Manual</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Indeed">Indeed</option>
+                <option value="Company Site">Company Site</option>
+                <option value="Referral">Referral</option>
+              </select>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Role / Title</label>

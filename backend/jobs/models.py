@@ -19,6 +19,7 @@ class Job(models.Model):
     risk_reason = models.TextField(blank=True)
     salary_min = models.IntegerField(null=True, blank=True)
     salary_max = models.IntegerField(null=True, blank=True)
+    source = models.CharField(max_length=100, blank=True, default='Manual')
 
     def __str__(self):
         return f"{self.role} at {self.company}"

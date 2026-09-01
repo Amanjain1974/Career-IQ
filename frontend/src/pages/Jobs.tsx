@@ -55,6 +55,11 @@ export default function Jobs() {
                         Safe
                       </span>
                     )}
+                    {job.source && (
+                      <span className="px-2 inline-flex text-[10px] uppercase font-bold tracking-wide leading-5 rounded-full bg-gray-100 text-gray-800 border border-gray-200">
+                        {job.source}
+                      </span>
+                    )}
                     {job.salary_min && (
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                         ${(job.salary_min / 1000).toFixed(0)}k {job.salary_max ? `- ${(job.salary_max / 1000).toFixed(0)}k` : '+'}
