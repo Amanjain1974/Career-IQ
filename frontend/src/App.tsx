@@ -7,6 +7,7 @@ import Applications from './pages/Applications';
 import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Settings from './pages/Settings';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import React from 'react';
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="jobs" element={<Jobs />} />
             <Route path="applications" element={<Applications />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </Router>

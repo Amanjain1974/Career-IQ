@@ -228,6 +228,22 @@ export const getReminders = async () => {
   }
 };
 
+export const getMe = async () => {
+  const response = await api.get('/accounts/me/');
+  return response.data;
+};
+
+export const updateMe = async (data: any) => {
+  const response = await api.patch('/accounts/me/', data);
+  return response.data;
+};
+
+export const exportData = async () => {
+  const response = await api.get('/accounts/export/');
+  return response.data;
+};
+
+
 
 
 
