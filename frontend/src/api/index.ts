@@ -277,6 +277,18 @@ export const matchJob = async (jobId: number) => {
   }
 };
 
+export const generateFollowUp = async (jobId: number) => {
+  try {
+    const response = await api.post('/ai/follow-up/', { job_id: jobId });
+    return response.data;
+  } catch (error) {
+    console.error("Error generating follow up", error);
+    return {
+      follow_up_email: "Hi team,\n\nJust following up on my application.\n\nBest,\nCandidate"
+    };
+  }
+};
+
 export const getReminders = async () => {
   try {
     const response = await api.get('/jobs/applications/reminders/');

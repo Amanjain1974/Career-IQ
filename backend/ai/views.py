@@ -119,3 +119,27 @@ def match_job(request):
         "match_score": score,
         "reason": reason
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def generate_follow_up(request):
+    job_id = request.data.get('job_id')
+    from jobs.models import Job
+    from django.shortcuts import get_object_or_404
+    job = get_object_or_404(Job, id=job_id)
+    
+    # Mock AI generated follow up email
+    email_body = f"""Hi Recruiting Team,
+
+I hope you're having a great week! 
+
+I'm following up on my application for the {job.role} position at {job.company}. I remain very interested in this opportunity and would love to hear if there are any updates regarding next steps.
+
+Please let me know if you need any additional information from my end.
+
+Best regards,
+[Your Name]"""
+
+    return Response({
+        "follow_up_email": email_body
+    })

@@ -6,6 +6,7 @@ import ResumeTailorModal from '../components/ResumeTailorModal';
 import InterviewPrepModal from '../components/InterviewPrepModal';
 import NotesModal from '../components/NotesModal';
 import NegotiateModal from '../components/NegotiateModal';
+import FollowUpModal from '../components/FollowUpModal';
 
 const COLUMNS = ['Saved', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
@@ -13,7 +14,7 @@ export default function Applications() {
   const [applications, setApplications] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
   const [selectedApp, setSelectedApp] = useState<any>(null);
-  const [activeModal, setActiveModal] = useState<'cover' | 'resume' | 'interview' | 'notes' | 'negotiate' | null>(null);
+  const [activeModal, setActiveModal] = useState<'cover' | 'resume' | 'interview' | 'notes' | 'negotiate' | 'followup' | null>(null);
   const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ export default function Applications() {
     }
   };
 
-  const openModal = (app: any, type: 'cover' | 'resume' | 'interview' | 'notes' | 'negotiate') => {
+  const openModal = (app: any, type: 'cover' | 'resume' | 'interview' | 'notes' | 'negotiate' | 'followup') => {
     setSelectedApp(app);
     setActiveModal(type);
   };
@@ -214,6 +215,14 @@ export default function Applications() {
                                     className="text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded"
                                   >
                                     Negotiate Salary
+                                  </button>
+                                )}
+                                {['Applied', 'Interview'].includes(app.status) && calculateDaysInStage(app.status_updated_at) >= 7 && (
+                                  <button 
+                                    onClick={() => openModal(app, 'followup')}
+                                    className="text-xs font-medium text-pink-600 hover:text-pink-800 bg-pink-50 px-2 py-1 rounded"
+                                  >
+                                    Draft Follow-up
                                   </button>
                                 )}
                               </div>
@@ -350,6 +359,16 @@ export default function Applications() {
 
       {selectedApp && activeModal === 'negotiate' && (
         <NegotiateModal 
+          applicationId={selectedApp.id}
+          jobId={selectedApp.job}
+          companyName={selectedApp.company}
+          roleTitle={selectedApp.role}
+          onClose={closeModal}
+        />
+      )}
+
+      {selectedApp && activeModal === 'followup' && (
+        <FollowUpModal 
           applicationId={selectedApp.id}
           jobId={selectedApp.job}
           companyName={selectedApp.company}

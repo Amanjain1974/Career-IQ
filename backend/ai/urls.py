@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     tailor_resume, generate_cover_letter, generate_interview_prep, 
-    negotiate_salary, summarize_job, match_job
+    negotiate_salary, summarize_job, match_job, generate_follow_up
 )
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('negotiate/', negotiate_salary, name='negotiate_salary'),
     path('summarize-job/', summarize_job, name='summarize_job'),
     path('match-job/', match_job, name='match_job'),
+    path('follow-up/', generate_follow_up, name='generate_follow_up'),
 ]
