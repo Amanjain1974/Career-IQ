@@ -29,7 +29,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Phase 32: Archiving support. 
         # By default, exclude archived unless specifically requested via query param.
-        qs = Application.objects.filter(candidate__user=self.request.user)
+        qs = Application.objects.filter(candidate__user=self.request.user).order_by('-updated_at')
         archived = self.request.query_params.get('archived', 'false').lower() == 'true'
         if not archived:
             qs = qs.filter(is_archived=False)

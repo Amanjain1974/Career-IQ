@@ -36,6 +36,7 @@ class Application(models.Model):
     priority = models.CharField(max_length=20, default='Medium') # High, Medium, Low
     referral_name = models.CharField(max_length=255, blank=True)
     referral_email = models.EmailField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.candidate.user.username} - {self.job.role}"
