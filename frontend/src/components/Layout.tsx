@@ -1,12 +1,18 @@
 import { Outlet, Link } from 'react-router-dom';
 import { HomeIcon, UserIcon, BriefcaseIcon, DocumentTextIcon, ChartBarIcon, MoonIcon, SunIcon, CogIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
+import { getMe } from '../api';
 
 export default function Layout() {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
     return saved === 'true';
   });
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    getMe().then(data => setUser(data)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (darkMode) {
@@ -76,9 +82,17 @@ export default function Layout() {
             >
               {darkMode ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
             </button>
-            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-300 font-bold">
-              U
-            </div>
+            {user ? (
+              <img 
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`} 
+                alt="avatar" 
+                className="w-8 h-8 rounded-full border dark:border-gray-600"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-300 font-bold">
+                U
+              </div>
+            )}
           </div>
         </header>
         <div className="p-8 dark:text-gray-100">
