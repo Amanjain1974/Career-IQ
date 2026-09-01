@@ -111,3 +111,24 @@ export const generateCoverLetter = async (jobId: number, style: string = 'profes
   }
 };
 
+export const createJob = async (jobData: any) => {
+  try {
+    const response = await api.post('/jobs/jobs/', jobData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating job", error);
+    throw error;
+  }
+};
+
+export const createApplication = async (applicationData: any) => {
+  try {
+    const response = await api.post('/jobs/applications/', applicationData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating application", error);
+    throw error;
+  }
+};
+
+
