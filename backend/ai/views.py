@@ -80,3 +80,17 @@ Best regards,
     return Response({
         "negotiation_email": email_body
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def summarize_job(request):
+    job_id = request.data.get('job_id')
+    # Mocking the AI summarization
+    summary = [
+        "Responsible for building scalable data pipelines using Python and Airflow.",
+        "Requires 3+ years of experience with distributed systems and SQL optimization.",
+        "Tech Stack: Python, Kafka, Airflow, PostgreSQL, AWS."
+    ]
+    return Response({
+        "summary": summary
+    })

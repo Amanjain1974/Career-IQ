@@ -238,6 +238,22 @@ export const negotiateSalary = async (data: { job_id: number, current_offer: str
   }
 };
 
+export const summarizeJob = async (jobId: number) => {
+  try {
+    const response = await api.post('/ai/summarize-job/', { job_id: jobId });
+    return response.data;
+  } catch (error) {
+    console.error("Error summarizing job", error);
+    return {
+      summary: [
+        "Responsible for building scalable data pipelines using Python and Airflow.",
+        "Requires 3+ years of experience with distributed systems and SQL optimization.",
+        "Tech Stack: Python, Kafka, Airflow, PostgreSQL, AWS."
+      ]
+    };
+  }
+};
+
 export const getReminders = async () => {
   try {
     const response = await api.get('/jobs/applications/reminders/');

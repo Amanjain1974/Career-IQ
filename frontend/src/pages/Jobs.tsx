@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { getJobs } from '../api';
 import AddJobModal from '../components/AddJobModal';
+import SummarizeJobModal from '../components/SummarizeJobModal';
 
 export default function Jobs() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [summarizeJob, setSummarizeJob] = useState<any>(null);
 
   const fetchJobs = () => {
     getJobs().then(data => setJobs(data));
@@ -17,7 +19,7 @@ export default function Jobs() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Recommended Jobs</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Saved Jobs</h1>
         <button 
           onClick={() => setShowAddModal(true)}
           className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
@@ -26,13 +28,20 @@ export default function Jobs() {
         </button>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
-        <ul className="divide-y divide-gray-200">
+      <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {jobs.map((job) => (
             <li key={job.id}>
-              <div className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer">
+              <div className="px-4 py-4 sm:px-6 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-indigo-600 truncate">{job.title || job.role}</p>
+                  <div className="flex items-center space-x-3">
+                    <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400 truncate">{job.title || job.role}</p>
+                    {job.is_applied && (
+                      <span className="px-2 inline-flex text-[10px] uppercase font-bold tracking-wide leading-5 rounded-full bg-green-100 text-green-800 border border-green-200">
+                        Applied
+                      </span>
+                    )}
+                  </div>
                   <div className="ml-2 flex-shrink-0 flex space-x-2">
                     {job.risk_score && job.risk_score !== 'LOW RISK' && (
                       <span title={job.risk_reason || 'Potential Scam'} className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 cursor-help">
@@ -44,18 +53,21 @@ export default function Jobs() {
                         Safe
                       </span>
                     )}
-                    <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      {job.match || (job.match_score ? `${job.match_score}%` : '90%')} Match
-                    </p>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setSummarizeJob(job); }}
+                      className="px-2 inline-flex text-xs leading-5 font-semibold rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700"
+                    >
+                      Summarize AI
+                    </button>
                   </div>
                 </div>
                 <div className="mt-2 sm:flex sm:justify-between">
                   <div className="sm:flex">
-                    <p className="flex items-center text-sm text-gray-500">
+                    <p className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                       {job.company} - {job.location || 'Unknown'} {job.work_mode && `(${job.work_mode})`}
                     </p>
                   </div>
-                  <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                  <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
                     <p>
                       Added {job.created_at ? new Date(job.created_at).toLocaleDateString() : 'Recently'}
                     </p>
@@ -65,7 +77,7 @@ export default function Jobs() {
             </li>
           ))}
           {jobs.length === 0 && (
-            <div className="px-4 py-8 text-center text-gray-500">No jobs found. Add some!</div>
+            <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">No jobs found. Add some!</div>
           )}
         </ul>
       </div>
@@ -77,6 +89,15 @@ export default function Jobs() {
             setShowAddModal(false);
             fetchJobs();
           }} 
+        />
+      )}
+
+      {summarizeJob && (
+        <SummarizeJobModal 
+          jobId={summarizeJob.id}
+          companyName={summarizeJob.company}
+          roleTitle={summarizeJob.title || summarizeJob.role}
+          onClose={() => setSummarizeJob(null)}
         />
       )}
     </div>
