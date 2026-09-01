@@ -302,10 +302,19 @@ export default function Applications() {
         <NotesModal 
           applicationId={selectedApp.id}
           initialNotes={selectedApp.notes}
+          initialReferralName={selectedApp.referral_name}
+          initialReferralEmail={selectedApp.referral_email}
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
           onClose={closeModal}
-          onSaved={(newNotes) => setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, notes: newNotes } : a))}
+          onSaved={(newNotes, refName, refEmail) => {
+            setApplications(prev => prev.map(a => a.id === selectedApp.id ? { 
+              ...a, 
+              notes: newNotes, 
+              referral_name: refName, 
+              referral_email: refEmail 
+            } : a));
+          }}
         />
       )}
 

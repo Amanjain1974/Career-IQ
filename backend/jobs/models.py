@@ -34,6 +34,8 @@ class Application(models.Model):
     tailored_resume = models.TextField(blank=True)
     is_archived = models.BooleanField(default=False)
     priority = models.CharField(max_length=20, default='Medium') # High, Medium, Low
+    referral_name = models.CharField(max_length=255, blank=True)
+    referral_email = models.EmailField(blank=True)
 
     def __str__(self):
         return f"{self.candidate.user.username} - {self.job.role}"
