@@ -57,3 +57,26 @@ def generate_interview_prep(request):
         "questions": questions
     })
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def negotiate_salary(request):
+    job_id = request.data.get('job_id')
+    current_offer = request.data.get('current_offer', '')
+    target_salary = request.data.get('target_salary', '')
+    tone = request.data.get('tone', 'appreciative')
+
+    # Mocking the AI negotiation generation
+    email_body = f"""Dear Hiring Manager,
+
+Thank you so much for extending this offer. I am thrilled about the opportunity to join the team.
+
+Before I sign, I would like to discuss the base salary. Given my specialized experience and the market rate for this level of responsibility, I was hoping we could explore a figure closer to {target_salary}. (Currently offered: {current_offer})
+
+I am very excited to bring my skills to the team and hope we can find a number that works for both of us.
+
+Best regards,
+[Your Name]"""
+
+    return Response({
+        "negotiation_email": email_body
+    })

@@ -9,6 +9,8 @@ class CandidateProfile(models.Model):
     github = models.URLField(blank=True)
     portfolio = models.URLField(blank=True)
     summary = models.TextField(blank=True)
+    target_salary = models.CharField(max_length=100, blank=True)
+    target_roles = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

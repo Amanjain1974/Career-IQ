@@ -59,9 +59,9 @@ export const getDashboardStats = async () => {
   }
 };
 
-export const getJobs = async () => {
+export const getJobs = async (params: any = {}) => {
   try {
-    const response = await api.get('/jobs/jobs/');
+    const response = await api.get('/jobs/jobs/', { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching jobs", error);
@@ -89,9 +89,9 @@ export const uploadResume = async (file: File) => {
   }
 };
 
-export const getApplications = async () => {
+export const getApplications = async (params: any = {}) => {
   try {
-    const response = await api.get('/jobs/applications/');
+    const response = await api.get('/jobs/applications/', { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching applications", error);
@@ -222,6 +222,18 @@ export const generateInterviewPrep = async (jobId: number) => {
         {"type": "Behavioral", "question": "Tell me about a time you failed.", "tips": "Be honest and focus on learnings."},
         {"type": "Technical", "question": "How does React rendering work?", "tips": "Discuss Virtual DOM and reconciliation."}
       ]
+    };
+  }
+};
+
+export const negotiateSalary = async (data: { job_id: number, current_offer: string, target_salary: string, tone: string }) => {
+  try {
+    const response = await api.post('/ai/negotiate/', data);
+    return response.data;
+  } catch (error) {
+    console.error("Error negotiating", error);
+    return {
+      negotiation_email: "Mock email: I would like to negotiate for a higher salary."
     };
   }
 };

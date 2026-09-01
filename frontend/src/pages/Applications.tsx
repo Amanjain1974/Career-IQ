@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { getApplications, updateApplicationStatus } from '../api';
+import { getApplications, updateApplicationStatus, updateApplication } from '../api';
 import CoverLetterGenerator from '../components/CoverLetterGenerator';
 import ResumeTailorModal from '../components/ResumeTailorModal';
 import InterviewPrepModal from '../components/InterviewPrepModal';
 import NotesModal from '../components/NotesModal';
+import NegotiateModal from '../components/NegotiateModal';
 
 const COLUMNS = ['Saved', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
@@ -12,11 +13,12 @@ export default function Applications() {
   const [applications, setApplications] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
   const [selectedApp, setSelectedApp] = useState<any>(null);
-  const [activeModal, setActiveModal] = useState<'cover' | 'resume' | 'interview' | 'notes' | null>(null);
+  const [activeModal, setActiveModal] = useState<'cover' | 'resume' | 'interview' | 'notes' | 'negotiate' | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
-    getApplications().then(data => setApplications(data));
-  }, []);
+    getApplications({ archived: showArchived }).then(data => setApplications(data));
+  }, [showArchived]);
 
   const onDragEnd = async (result: any) => {
     const { destination, source, draggableId } = result;
@@ -36,7 +38,42 @@ export default function Applications() {
       await updateApplicationStatus(appId, newStatus);
     } catch (e) {
       // Revert on failure
-      getApplications().then(data => setApplications(data));
+      getApplications({ archived: showArchived }).then(data => setApplications(data));
+    }
+  };
+
+  const toggleArchive = async (appId: number, currentArchived: boolean) => {
+    const is_archived = !currentArchived;
+    setApplications(prev => prev.map(a => a.id === appId ? { ...a, is_archived } : a));
+    try {
+      await updateApplication(appId, { is_archived });
+      if (!showArchived && is_archived) {
+        setApplications(prev => prev.filter(a => a.id !== appId));
+      }
+    } catch (e) {
+      alert("Failed to archive");
+    }
+  };
+
+  const cyclePriority = async (appId: number, currentPriority: string) => {
+    const priorities = ['Low', 'Medium', 'High'];
+    const nextIdx = (priorities.indexOf(currentPriority || 'Medium') + 1) % 3;
+    const priority = priorities[nextIdx];
+    
+    setApplications(prev => prev.map(a => a.id === appId ? { ...a, priority } : a));
+    try {
+      await updateApplication(appId, { priority });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch(priority) {
+      case 'High': return 'bg-red-100 text-red-800 border-red-200';
+      case 'Medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Low': return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     }
   };
 
@@ -50,7 +87,7 @@ export default function Applications() {
     }
   };
 
-  const openModal = (app: any, type: 'cover' | 'resume' | 'interview' | 'notes') => {
+  const openModal = (app: any, type: 'cover' | 'resume' | 'interview' | 'notes' | 'negotiate') => {
     setSelectedApp(app);
     setActiveModal(type);
   };
@@ -64,19 +101,30 @@ export default function Applications() {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Application Tracker</h1>
-        <div className="bg-white shadow rounded-lg p-1 flex space-x-1">
-          <button 
-            onClick={() => setViewMode('board')}
-            className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'board' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            Board
-          </button>
-          <button 
-            onClick={() => setViewMode('list')}
-            className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'list' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            List
-          </button>
+        <div className="flex items-center space-x-4">
+          <label className="flex items-center text-sm text-gray-700">
+            <input 
+              type="checkbox" 
+              className="mr-2 rounded text-indigo-600 focus:ring-indigo-500"
+              checked={showArchived}
+              onChange={(e) => setShowArchived(e.target.checked)}
+            />
+            Show Archived
+          </label>
+          <div className="bg-white shadow rounded-lg p-1 flex space-x-1">
+            <button 
+              onClick={() => setViewMode('board')}
+              className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'board' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              Board
+            </button>
+            <button 
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'list' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              List
+            </button>
+          </div>
         </div>
       </div>
 
@@ -100,11 +148,21 @@ export default function Applications() {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="bg-white p-4 rounded-lg shadow mb-3 border border-gray-200"
+                              className={`bg-white p-4 rounded-lg shadow mb-3 border ${app.is_archived ? 'opacity-50' : 'border-gray-200'}`}
                             >
-                              <h3 className="font-medium text-gray-900">{app.role}</h3>
+                              <div className="flex justify-between items-start mb-1">
+                                <h3 className="font-medium text-gray-900">{app.role}</h3>
+                                <button 
+                                  onClick={() => cyclePriority(app.id, app.priority)}
+                                  className={`text-[10px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded border cursor-pointer hover:opacity-80 ${getPriorityColor(app.priority)}`}
+                                  title="Click to change priority"
+                                >
+                                  {app.priority || 'Medium'}
+                                </button>
+                              </div>
                               <p className="text-sm text-gray-500 mb-3">{app.company}</p>
-                              <div className="flex flex-wrap gap-2">
+                              
+                              <div className="flex flex-wrap gap-2 mb-2">
                                 <button 
                                   onClick={() => openModal(app, 'cover')}
                                   className="text-xs font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded"
@@ -129,6 +187,22 @@ export default function Applications() {
                                 >
                                   Journal Notes
                                 </button>
+                                {app.status === 'Offer' && (
+                                  <button 
+                                    onClick={() => openModal(app, 'negotiate')}
+                                    className="text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded"
+                                  >
+                                    Negotiate Salary
+                                  </button>
+                                )}
+                              </div>
+                              <div className="flex justify-end mt-2">
+                                <button 
+                                  onClick={() => toggleArchive(app.id, app.is_archived)}
+                                  className="text-xs text-red-500 hover:text-red-700"
+                                >
+                                  {app.is_archived ? 'Unarchive' : 'Archive'}
+                                </button>
                               </div>
                             </div>
                           )}
@@ -143,19 +217,20 @@ export default function Applications() {
           </div>
         </DragDropContext>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg flex-1">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {applications.map(app => (
-                <tr key={app.id}>
+                <tr key={app.id} className={app.is_archived ? 'opacity-50' : ''}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{app.company}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.role}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -163,30 +238,24 @@ export default function Applications() {
                       {app.status || 'Saved'}
                     </span>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button 
+                      onClick={() => cyclePriority(app.id, app.priority)}
+                      className={`text-[10px] uppercase tracking-wide font-bold px-2 py-1 rounded-full border ${getPriorityColor(app.priority)}`}
+                    >
+                      {app.priority || 'Medium'}
+                    </button>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-3">
-                    <button 
-                      onClick={() => openModal(app, 'cover')}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Cover Letter
-                    </button>
-                    <button 
-                      onClick={() => openModal(app, 'resume')}
-                      className="text-green-600 hover:text-green-900"
-                    >
-                      Tailor Resume
-                    </button>
-                    <button 
-                      onClick={() => openModal(app, 'interview')}
-                      className="text-purple-600 hover:text-purple-900"
-                    >
-                      Prep Interview
-                    </button>
-                    <button 
-                      onClick={() => openModal(app, 'notes')}
-                      className="text-gray-600 hover:text-gray-900"
-                    >
-                      Journal
+                    <button onClick={() => openModal(app, 'cover')} className="text-indigo-600 hover:text-indigo-900">Cover Letter</button>
+                    <button onClick={() => openModal(app, 'resume')} className="text-green-600 hover:text-green-900">Tailor Resume</button>
+                    <button onClick={() => openModal(app, 'interview')} className="text-purple-600 hover:text-purple-900">Prep Interview</button>
+                    <button onClick={() => openModal(app, 'notes')} className="text-gray-600 hover:text-gray-900">Journal</button>
+                    {app.status === 'Offer' && (
+                      <button onClick={() => openModal(app, 'negotiate')} className="text-blue-600 hover:text-blue-900">Negotiate</button>
+                    )}
+                    <button onClick={() => toggleArchive(app.id, app.is_archived)} className="text-red-600 hover:text-red-900 pl-4 border-l">
+                      {app.is_archived ? 'Unarchive' : 'Archive'}
                     </button>
                   </td>
                 </tr>
@@ -204,9 +273,7 @@ export default function Applications() {
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
           onClose={closeModal}
-          onSaved={(newLetter) => {
-            setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, cover_letter: newLetter } : a));
-          }}
+          onSaved={(newLetter) => setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, cover_letter: newLetter } : a))}
         />
       )}
 
@@ -218,9 +285,7 @@ export default function Applications() {
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
           onClose={closeModal}
-          onSaved={(newResume) => {
-            setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, tailored_resume: newResume } : a));
-          }}
+          onSaved={(newResume) => setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, tailored_resume: newResume } : a))}
         />
       )}
 
@@ -240,9 +305,17 @@ export default function Applications() {
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
           onClose={closeModal}
-          onSaved={(newNotes) => {
-            setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, notes: newNotes } : a));
-          }}
+          onSaved={(newNotes) => setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, notes: newNotes } : a))}
+        />
+      )}
+
+      {selectedApp && activeModal === 'negotiate' && (
+        <NegotiateModal 
+          applicationId={selectedApp.id}
+          jobId={selectedApp.job}
+          companyName={selectedApp.company}
+          roleTitle={selectedApp.role}
+          onClose={closeModal}
         />
       )}
     </div>

@@ -8,6 +8,7 @@ import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Settings from './pages/Settings';
+import Search from './pages/Search';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import React from 'react';
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="applications" element={<Applications />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="search" element={<Search />} />
           </Route>
         </Routes>
       </Router>

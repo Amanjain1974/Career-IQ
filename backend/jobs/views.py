@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +10,8 @@ class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobSerializer
     queryset = Job.objects.all()
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['company', 'role', 'description']
 
     @action(detail=True, methods=['post'])
     def match(self, request, pk=None):
@@ -21,9 +23,17 @@ class JobViewSet(viewsets.ModelViewSet):
 class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['job__company', 'job__role', 'notes']
 
     def get_queryset(self):
-        return Application.objects.filter(candidate__user=self.request.user)
+        # Phase 32: Archiving support. 
+        # By default, exclude archived unless specifically requested via query param.
+        qs = Application.objects.filter(candidate__user=self.request.user)
+        archived = self.request.query_params.get('archived', 'false').lower() == 'true'
+        if not archived:
+            qs = qs.filter(is_archived=False)
+        return qs
 
     def perform_create(self, serializer):
         profile, _ = CandidateProfile.objects.get_or_create(user=self.request.user)

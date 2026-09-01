@@ -1,31 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { getMe, updateMe, exportData } from '../api';
+import { getMe, updateMe, exportData, getCandidateProfile, updateCandidateProfile } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Settings() {
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [email, setEmail] = useState('');
+  const [targetSalary, setTargetSalary] = useState('');
+  const [targetRoles, setTargetRoles] = useState('');
   const [message, setMessage] = useState('');
+  const [profileMessage, setProfileMessage] = useState('');
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    getMe()
-      .then(data => {
-        setUser(data);
-        setEmail(data.email || '');
-      })
-      .catch(err => console.error("Error fetching user", err));
+    getMe().then(data => {
+      setUser(data);
+      setEmail(data.email || '');
+    }).catch(err => console.error("Error fetching user", err));
+
+    getCandidateProfile().then(data => {
+      if (data && data.length > 0) {
+        setProfile(data[0]);
+        setTargetSalary(data[0].target_salary || '');
+        setTargetRoles(data[0].target_roles || '');
+      }
+    }).catch(err => console.error("Error fetching profile", err));
   }, []);
 
-  const handleUpdate = async (e: React.FormEvent) => {
+  const handleUpdateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await updateMe({ email });
       setMessage('Account updated successfully.');
     } catch (err) {
       setMessage('Failed to update account.');
+    }
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profile) return;
+    try {
+      await updateCandidateProfile(profile.id, { target_salary: targetSalary, target_roles: targetRoles });
+      setProfileMessage('Career goals updated successfully.');
+    } catch (err) {
+      setProfileMessage('Failed to update goals.');
     }
   };
 
@@ -50,7 +71,7 @@ export default function Settings() {
     navigate('/login');
   };
 
-  if (!user) return <div>Loading settings...</div>;
+  if (!user) return <div className="p-8">Loading settings...</div>;
 
   return (
     <div className="max-w-4xl mx-auto py-6">
@@ -58,11 +79,11 @@ export default function Settings() {
       
       <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg mb-8">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Profile Details</h3>
-          <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Personal details and preferences.</p>
+          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Account Details</h3>
+          <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Personal login details.</p>
         </div>
         <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:p-6">
-          <form onSubmit={handleUpdate} className="space-y-4 max-w-md">
+          <form onSubmit={handleUpdateAccount} className="space-y-4 max-w-md">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
               <input 
@@ -83,7 +104,40 @@ export default function Settings() {
             </div>
             {message && <p className="text-sm text-green-600">{message}</p>}
             <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-              Save Changes
+              Save Account
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg mb-8">
+        <div className="px-4 py-5 sm:px-6">
+          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Career Goals</h3>
+          <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Used by AI to negotiate salaries and evaluate job fits.</p>
+        </div>
+        <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:p-6">
+          <form onSubmit={handleUpdateProfile} className="space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Roles (e.g., Senior Data Engineer, ML Ops)</label>
+              <input 
+                type="text" 
+                value={targetRoles} 
+                onChange={e => setTargetRoles(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Salary (e.g., $140,000)</label>
+              <input 
+                type="text" 
+                value={targetSalary} 
+                onChange={e => setTargetSalary(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+              />
+            </div>
+            {profileMessage && <p className="text-sm text-green-600">{profileMessage}</p>}
+            <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+              Save Career Goals
             </button>
           </form>
         </div>

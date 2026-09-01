@@ -32,6 +32,8 @@ class Application(models.Model):
     notes = models.TextField(blank=True)
     cover_letter = models.TextField(blank=True)
     tailored_resume = models.TextField(blank=True)
+    is_archived = models.BooleanField(default=False)
+    priority = models.CharField(max_length=20, default='Medium') # High, Medium, Low
 
     def __str__(self):
         return f"{self.candidate.user.username} - {self.job.role}"
