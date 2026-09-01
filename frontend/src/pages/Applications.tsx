@@ -119,9 +119,9 @@ export default function Applications() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Application Tracker</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Application Tracker</h1>
         <div className="flex items-center space-x-4">
-          <label className="flex items-center text-sm text-gray-700">
+          <label className="flex items-center text-sm text-gray-700 dark:text-gray-300">
             <input 
               type="checkbox" 
               className="mr-2 rounded text-indigo-600 focus:ring-indigo-500"
@@ -130,16 +130,16 @@ export default function Applications() {
             />
             Show Archived
           </label>
-          <div className="bg-white shadow rounded-lg p-1 flex space-x-1">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-1 flex space-x-1">
             <button 
               onClick={() => setViewMode('board')}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'board' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'board' ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
             >
               Board
             </button>
             <button 
               onClick={() => setViewMode('list')}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'list' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-3 py-1 rounded-md text-sm font-medium ${viewMode === 'list' ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
             >
               List
             </button>
@@ -151,8 +151,8 @@ export default function Applications() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex space-x-4 overflow-x-auto pb-4 flex-1">
             {COLUMNS.map(columnId => (
-              <div key={columnId} className="bg-gray-100 rounded-lg p-4 w-80 flex-shrink-0 flex flex-col">
-                <h2 className="font-semibold text-gray-700 mb-4">{columnId}</h2>
+              <div key={columnId} className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 w-80 flex-shrink-0 flex flex-col">
+                <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-4">{columnId}</h2>
                 <Droppable droppableId={columnId}>
                   {(provided) => (
                     <div 
@@ -167,10 +167,10 @@ export default function Applications() {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`bg-white p-4 rounded-lg shadow mb-3 border ${app.is_archived ? 'opacity-50' : 'border-gray-200'}`}
+                              className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-3 border ${app.is_archived ? 'opacity-50' : 'border-gray-200 dark:border-gray-700'}`}
                             >
                               <div className="flex justify-between items-start mb-1">
-                                <h3 className="font-medium text-gray-900">{app.role}</h3>
+                                <h3 className="font-medium text-gray-900 dark:text-white">{app.role}</h3>
                                 <button 
                                   onClick={() => cyclePriority(app.id, app.priority)}
                                   className={`text-[10px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded border cursor-pointer hover:opacity-80 ${getPriorityColor(app.priority)}`}
@@ -179,8 +179,8 @@ export default function Applications() {
                                   {app.priority || 'Medium'}
                                 </button>
                               </div>
-                              <p className="text-sm text-gray-500 mb-1">{app.company}</p>
-                              <p className="text-[10px] text-gray-400 mb-3 flex items-center">
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{app.company}</p>
+                              <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-3 flex items-center">
                                 ⏳ {calculateDaysInStage(app.status_updated_at)} days in stage
                               </p>
                               
@@ -253,22 +253,22 @@ export default function Applications() {
           </div>
         </DragDropContext>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg flex-1">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg flex-1">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Company</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {applications.map(app => (
                 <tr key={app.id} className={app.is_archived ? 'opacity-50' : ''}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{app.company}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.role}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{app.company}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{app.role}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(app.status)}`}>
                       {app.status || 'Saved'}
@@ -282,18 +282,18 @@ export default function Applications() {
                       {app.priority || 'Medium'}
                     </button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-3">
-                    <button onClick={() => openModal(app, 'cover')} className="text-indigo-600 hover:text-indigo-900">Cover Letter</button>
-                    <button onClick={() => openModal(app, 'resume')} className="text-green-600 hover:text-green-900">Tailor Resume</button>
-                    <button onClick={() => openModal(app, 'interview')} className="text-purple-600 hover:text-purple-900">Prep Interview</button>
-                    <button onClick={() => openModal(app, 'notes')} className="text-gray-600 hover:text-gray-900">Journal</button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 space-x-3">
+                    <button onClick={() => openModal(app, 'cover')} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">Cover Letter</button>
+                    <button onClick={() => openModal(app, 'resume')} className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300">Tailor Resume</button>
+                    <button onClick={() => openModal(app, 'interview')} className="text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300">Prep Interview</button>
+                    <button onClick={() => openModal(app, 'notes')} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">Journal</button>
                     {app.status === 'Offer' && (
-                      <button onClick={() => openModal(app, 'negotiate')} className="text-blue-600 hover:text-blue-900">Negotiate</button>
+                      <button onClick={() => openModal(app, 'negotiate')} className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">Negotiate</button>
                     )}
-                    <button onClick={() => toggleArchive(app.id, app.is_archived)} className="text-gray-600 hover:text-gray-900 pl-4 border-l">
+                    <button onClick={() => toggleArchive(app.id, app.is_archived)} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 pl-4 border-l dark:border-gray-600">
                       {app.is_archived ? 'Unarchive' : 'Archive'}
                     </button>
-                    <button onClick={() => handleDelete(app.id)} className="text-red-600 hover:text-red-900">
+                    <button onClick={() => handleDelete(app.id)} className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
                       Delete
                     </button>
                   </td>
