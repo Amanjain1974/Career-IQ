@@ -66,9 +66,9 @@ export const getJobs = async (params: any = {}) => {
   } catch (error) {
     console.error("Error fetching jobs", error);
     return [
-      { id: 1, title: 'Data Engineer (Mock)', company: 'TechCorp', match: '94%', location: 'Remote', risk_score: 'LOW RISK' },
-      { id: 2, title: 'ML Engineer (Mock)', company: 'AI Inc', match: '91%', location: 'SF', risk_score: 'LOW RISK' },
-      { id: 3, title: 'Data Entry (Mock)', company: 'Unknown', match: '40%', location: 'Remote', risk_score: 'HIGH RISK', risk_reason: 'Asks for banking details upfront.' },
+      { id: 1, title: 'Data Engineer (Mock)', company: 'TechCorp', match: '94%', location: 'Remote', risk_score: 'LOW RISK', is_applied: true },
+      { id: 2, title: 'ML Engineer (Mock)', company: 'AI Inc', match: '91%', location: 'SF', risk_score: 'LOW RISK', is_applied: false },
+      { id: 3, title: 'Data Entry (Mock)', company: 'Unknown', match: '40%', location: 'Remote', risk_score: 'HIGH RISK', risk_reason: 'Asks for banking details upfront.', is_applied: false },
     ];
   }
 };
