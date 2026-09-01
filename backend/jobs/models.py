@@ -40,6 +40,13 @@ class Application(models.Model):
     referral_name = models.CharField(max_length=255, blank=True)
     referral_email = models.EmailField(blank=True)
     updated_at = models.DateTimeField(auto_now=True)
+    status_updated_at = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            from django.utils import timezone
+            self.status_updated_at = timezone.now()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.candidate.user.username} - {self.job.role}"

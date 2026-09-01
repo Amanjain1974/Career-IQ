@@ -39,6 +39,13 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         profile, _ = CandidateProfile.objects.get_or_create(user=self.request.user)
         serializer.save(candidate=profile)
 
+    def perform_update(self, serializer):
+        if 'status' in serializer.validated_data:
+            from django.utils import timezone
+            serializer.save(status_updated_at=timezone.now())
+        else:
+            serializer.save()
+
     @action(detail=False, methods=['get'])
     def reminders(self, request):
         from datetime import date

@@ -107,6 +107,14 @@ export default function Applications() {
     setActiveModal(null);
   };
 
+  const calculateDaysInStage = (dateString: string | null) => {
+    if (!dateString) return 0;
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  };
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
@@ -170,7 +178,10 @@ export default function Applications() {
                                   {app.priority || 'Medium'}
                                 </button>
                               </div>
-                              <p className="text-sm text-gray-500 mb-3">{app.company}</p>
+                              <p className="text-sm text-gray-500 mb-1">{app.company}</p>
+                              <p className="text-[10px] text-gray-400 mb-3 flex items-center">
+                                ⏳ {calculateDaysInStage(app.status_updated_at)} days in stage
+                              </p>
                               
                               <div className="flex flex-wrap gap-2 mb-2">
                                 <button 
