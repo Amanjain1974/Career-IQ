@@ -122,6 +122,16 @@ export const updateApplication = async (id: number, data: any) => {
   }
 };
 
+export const deleteApplication = async (id: number) => {
+  try {
+    const response = await api.delete(`/jobs/applications/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting application ${id}`, error);
+    throw error;
+  }
+};
+
 export const generateCoverLetter = async (jobId: number, style: string = 'professional') => {
   try {
     const response = await api.post('/ai/cover-letter/', { job_id: jobId, style });

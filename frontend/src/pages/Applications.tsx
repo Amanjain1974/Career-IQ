@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { getApplications, updateApplicationStatus, updateApplication } from '../api';
+import { getApplications, updateApplicationStatus, updateApplication, deleteApplication } from '../api';
 import CoverLetterGenerator from '../components/CoverLetterGenerator';
 import ResumeTailorModal from '../components/ResumeTailorModal';
 import InterviewPrepModal from '../components/InterviewPrepModal';
@@ -65,6 +65,16 @@ export default function Applications() {
       await updateApplication(appId, { priority });
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleDelete = async (appId: number) => {
+    if (!window.confirm("Are you sure you want to permanently delete this application?")) return;
+    try {
+      await deleteApplication(appId);
+      setApplications(prev => prev.filter(a => a.id !== appId));
+    } catch (e) {
+      alert("Failed to delete application");
     }
   };
 
@@ -196,12 +206,18 @@ export default function Applications() {
                                   </button>
                                 )}
                               </div>
-                              <div className="flex justify-end mt-2">
+                              <div className="flex justify-end mt-2 space-x-3">
                                 <button 
                                   onClick={() => toggleArchive(app.id, app.is_archived)}
-                                  className="text-xs text-red-500 hover:text-red-700"
+                                  className="text-xs text-gray-500 hover:text-gray-700"
                                 >
                                   {app.is_archived ? 'Unarchive' : 'Archive'}
+                                </button>
+                                <button 
+                                  onClick={() => handleDelete(app.id)}
+                                  className="text-xs text-red-500 hover:text-red-700"
+                                >
+                                  Delete
                                 </button>
                               </div>
                             </div>
@@ -254,8 +270,11 @@ export default function Applications() {
                     {app.status === 'Offer' && (
                       <button onClick={() => openModal(app, 'negotiate')} className="text-blue-600 hover:text-blue-900">Negotiate</button>
                     )}
-                    <button onClick={() => toggleArchive(app.id, app.is_archived)} className="text-red-600 hover:text-red-900 pl-4 border-l">
+                    <button onClick={() => toggleArchive(app.id, app.is_archived)} className="text-gray-600 hover:text-gray-900 pl-4 border-l">
                       {app.is_archived ? 'Unarchive' : 'Archive'}
+                    </button>
+                    <button onClick={() => handleDelete(app.id)} className="text-red-600 hover:text-red-900">
+                      Delete
                     </button>
                   </td>
                 </tr>
