@@ -212,6 +212,33 @@ export default function Settings() {
 
       <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg mb-8">
         <div className="px-4 py-5 sm:px-6">
+          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">API Key</h3>
+          <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Copy this token to use the CareerIQ Chrome Extension.</p>
+        </div>
+        <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:p-6">
+          <div className="flex space-x-4">
+            <input 
+              type="text" 
+              readOnly 
+              value={localStorage.getItem('accessToken') || ''} 
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-400 bg-gray-50 text-gray-500 cursor-text" 
+              onFocus={e => e.target.select()}
+            />
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(localStorage.getItem('accessToken') || '');
+                alert('Copied to clipboard!');
+              }}
+              className="mt-1 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 whitespace-nowrap"
+            >
+              Copy Key
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg mb-8">
+        <div className="px-4 py-5 sm:px-6">
           <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Data Portability</h3>
           <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Download all your career data.</p>
         </div>
