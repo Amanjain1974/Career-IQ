@@ -2,23 +2,36 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
+// Interceptor to attach JWT token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-export const login = async (email: string, password: string) => {
-  const response = await api.post('/token/', { email, password });
-  localStorage.setItem('access_token', response.data.access);
-  localStorage.setItem('refresh_token', response.data.refresh);
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Auth endpoints
+export const login = async (credentials: any) => {
+  const response = await axios.post('http://localhost:8000/api/token/', credentials);
+  return response.data;
+};
+
+export const register = async (userData: any) => {
+  const response = await axios.post('http://localhost:8000/api/accounts/register/', userData);
   return response.data;
 };
 

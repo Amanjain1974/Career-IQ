@@ -6,28 +6,32 @@ import Jobs from './pages/Jobs';
 import Applications from './pages/Applications';
 import Analytics from './pages/Analytics';
 import Login from './pages/Login';
-
+import Register from './pages/Register';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import React from 'react';
 
 const PrivateRoute = ({ children }: { children: React.ReactElement }) => {
-  const token = localStorage.getItem('access_token');
-  return token ? children : <Navigate to="/login" />;
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-          <Route index element={<Dashboard />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="jobs" element={<Jobs />} />
-          <Route path="applications" element={<Applications />} />
-          <Route path="analytics" element={<Analytics />} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
+            <Route index element={<Dashboard />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="jobs" element={<Jobs />} />
+            <Route path="applications" element={<Applications />} />
+            <Route path="analytics" element={<Analytics />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
