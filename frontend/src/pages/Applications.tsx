@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { getApplications, updateApplicationStatus } from '../api';
 import CoverLetterGenerator from '../components/CoverLetterGenerator';
+import ResumeTailorModal from '../components/ResumeTailorModal';
+import InterviewPrepModal from '../components/InterviewPrepModal';
 
 const COLUMNS = ['Saved', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
@@ -9,6 +11,7 @@ export default function Applications() {
   const [applications, setApplications] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
   const [selectedApp, setSelectedApp] = useState<any>(null);
+  const [activeModal, setActiveModal] = useState<'cover' | 'resume' | 'interview' | null>(null);
 
   useEffect(() => {
     getApplications().then(data => setApplications(data));
@@ -44,6 +47,16 @@ export default function Applications() {
       case 'Rejected': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const openModal = (app: any, type: 'cover' | 'resume' | 'interview') => {
+    setSelectedApp(app);
+    setActiveModal(type);
+  };
+
+  const closeModal = () => {
+    setSelectedApp(null);
+    setActiveModal(null);
   };
 
   return (
@@ -89,13 +102,27 @@ export default function Applications() {
                               className="bg-white p-4 rounded-lg shadow mb-3 border border-gray-200"
                             >
                               <h3 className="font-medium text-gray-900">{app.role}</h3>
-                              <p className="text-sm text-gray-500 mb-2">{app.company}</p>
-                              <button 
-                                onClick={() => setSelectedApp(app)}
-                                className="text-xs text-indigo-600 hover:text-indigo-800"
-                              >
-                                Generate Cover Letter
-                              </button>
+                              <p className="text-sm text-gray-500 mb-3">{app.company}</p>
+                              <div className="flex flex-wrap gap-2">
+                                <button 
+                                  onClick={() => openModal(app, 'cover')}
+                                  className="text-xs font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded"
+                                >
+                                  Cover Letter
+                                </button>
+                                <button 
+                                  onClick={() => openModal(app, 'resume')}
+                                  className="text-xs font-medium text-green-600 hover:text-green-800 bg-green-50 px-2 py-1 rounded"
+                                >
+                                  Tailor Resume
+                                </button>
+                                <button 
+                                  onClick={() => openModal(app, 'interview')}
+                                  className="text-xs font-medium text-purple-600 hover:text-purple-800 bg-purple-50 px-2 py-1 rounded"
+                                >
+                                  Prep Interview
+                                </button>
+                              </div>
                             </div>
                           )}
                         </Draggable>
@@ -129,12 +156,24 @@ export default function Applications() {
                       {app.status || 'Saved'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-3">
                     <button 
-                      onClick={() => setSelectedApp(app)}
+                      onClick={() => openModal(app, 'cover')}
                       className="text-indigo-600 hover:text-indigo-900"
                     >
                       Cover Letter
+                    </button>
+                    <button 
+                      onClick={() => openModal(app, 'resume')}
+                      className="text-green-600 hover:text-green-900"
+                    >
+                      Tailor Resume
+                    </button>
+                    <button 
+                      onClick={() => openModal(app, 'interview')}
+                      className="text-purple-600 hover:text-purple-900"
+                    >
+                      Prep Interview
                     </button>
                   </td>
                 </tr>
@@ -144,12 +183,30 @@ export default function Applications() {
         </div>
       )}
 
-      {selectedApp && (
+      {selectedApp && activeModal === 'cover' && (
         <CoverLetterGenerator 
           jobId={selectedApp.id}
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
-          onClose={() => setSelectedApp(null)}
+          onClose={closeModal}
+        />
+      )}
+
+      {selectedApp && activeModal === 'resume' && (
+        <ResumeTailorModal 
+          jobId={selectedApp.id}
+          companyName={selectedApp.company}
+          roleTitle={selectedApp.role}
+          onClose={closeModal}
+        />
+      )}
+
+      {selectedApp && activeModal === 'interview' && (
+        <InterviewPrepModal 
+          jobId={selectedApp.id}
+          companyName={selectedApp.company}
+          roleTitle={selectedApp.role}
+          onClose={closeModal}
         />
       )}
     </div>

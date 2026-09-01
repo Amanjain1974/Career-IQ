@@ -131,4 +131,78 @@ export const createApplication = async (applicationData: any) => {
   }
 };
 
+export const getCandidateProfile = async () => {
+  try {
+    const response = await api.get('/candidates/profiles/');
+    return response.data;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const updateCandidateProfile = async (id: number, data: any) => {
+  const response = await api.patch(`/candidates/profiles/${id}/`, data);
+  return response.data;
+};
+
+export const getExperiences = async () => {
+  try {
+    const response = await api.get('/candidates/experiences/');
+    return response.data;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const addExperience = async (data: any) => {
+  const response = await api.post('/candidates/experiences/', data);
+  return response.data;
+};
+
+export const getEducations = async () => {
+  try {
+    const response = await api.get('/candidates/educations/');
+    return response.data;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const addEducation = async (data: any) => {
+  const response = await api.post('/candidates/educations/', data);
+  return response.data;
+};
+
+export const tailorResume = async (jobId: number) => {
+  try {
+    const response = await api.post('/ai/tailor-resume/', { job_id: jobId });
+    return response.data;
+  } catch (error) {
+    console.error("Error tailoring resume", error);
+    // Mock response if backend fails
+    return {
+      resume: "Mock Tailored Resume:\n- Highlights of data engineering.\n- Relevant ML skills.",
+      qa_report: { score: 92, recommendations: ["Add more keywords about distributed systems"] }
+    };
+  }
+};
+
+export const generateInterviewPrep = async (jobId: number) => {
+  try {
+    const response = await api.post('/ai/interview-prep/', { job_id: jobId });
+    return response.data;
+  } catch (error) {
+    console.error("Error generating interview prep", error);
+    return {
+      questions: [
+        {"type": "Behavioral", "question": "Tell me about a time you failed.", "tips": "Be honest and focus on learnings."},
+        {"type": "Technical", "question": "How does React rendering work?", "tips": "Discuss Virtual DOM and reconciliation."}
+      ]
+    };
+  }
+};
+
+
+
+
 

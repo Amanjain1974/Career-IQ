@@ -40,3 +40,20 @@ def generate_cover_letter(request):
     return Response({
         "cover_letter": result
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def generate_interview_prep(request):
+    job_id = request.data.get('job_id')
+    
+    # Mocking interview questions generation
+    questions = [
+        {"type": "Behavioral", "question": "Tell me about a time you had to optimize a slow-performing system.", "tips": "Use the STAR method. Focus on specific metrics (e.g. reduced latency by 40%)."},
+        {"type": "Technical", "question": "How would you design a data pipeline to process 10,000 events per second?", "tips": "Discuss Kafka/Kinesis, stream processing (Flink/Spark), and idempotent writes."},
+        {"type": "Role-Specific", "question": "What is your approach to ensuring data quality across different sources?", "tips": "Mention data validation checks, schema registries, and alerting mechanisms."}
+    ]
+    
+    return Response({
+        "questions": questions
+    })
+

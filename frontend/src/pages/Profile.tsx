@@ -1,10 +1,36 @@
-import { useState } from 'react';
-import { uploadResume } from '../api';
+import { useState, useEffect } from 'react';
+import { uploadResume, getCandidateProfile, getExperiences, getEducations, updateCandidateProfile, addExperience, addEducation } from '../api';
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('master');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
+  
+  // Master Profile State
+  const [profile, setProfile] = useState<any>(null);
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [educations, setEducations] = useState<any[]>([]);
+  const [summary, setSummary] = useState('');
+
+  // New item state
+  const [newExp, setNewExp] = useState({ company: '', job_title: '', responsibilities: '' });
+  const [newEdu, setNewEdu] = useState({ institution: '', degree: '' });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const profs = await getCandidateProfile();
+    if (profs.length > 0) {
+      setProfile(profs[0]);
+      setSummary(profs[0].summary || '');
+    }
+    const exps = await getExperiences();
+    setExperiences(exps);
+    const edus = await getEducations();
+    setEducations(edus);
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -15,10 +41,34 @@ export default function Profile() {
     try {
       await uploadResume(file);
       setUploadMessage('Resume uploaded and parsed successfully!');
+      fetchData(); // Refresh data as parsing might have updated it
     } catch (error) {
       setUploadMessage('Failed to upload resume. Make sure the backend is running.');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const saveSummary = async () => {
+    if (profile) {
+      await updateCandidateProfile(profile.id, { summary });
+      alert('Summary saved');
+    }
+  };
+
+  const handleAddExperience = async () => {
+    if (profile && newExp.company) {
+      await addExperience({ profile: profile.id, ...newExp });
+      setNewExp({ company: '', job_title: '', responsibilities: '' });
+      fetchData();
+    }
+  };
+
+  const handleAddEducation = async () => {
+    if (profile && newEdu.institution) {
+      await addEducation({ profile: profile.id, ...newEdu });
+      setNewEdu({ institution: '', degree: '' });
+      fetchData();
     }
   };
 
@@ -48,11 +98,53 @@ export default function Profile() {
       </div>
 
       {activeTab === 'master' ? (
-        <div className="bg-white shadow sm:rounded-lg p-6">
-          <h2 className="text-lg leading-6 font-medium text-gray-900">Personal Information</h2>
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">
-            Your single source of truth for all applications.
-          </p>
+        <div className="space-y-6">
+          <div className="bg-white shadow sm:rounded-lg p-6">
+            <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">Professional Summary</h2>
+            <textarea 
+              rows={4}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="A brief summary of your career..."
+            />
+            <button onClick={saveSummary} className="mt-2 bg-indigo-600 text-white px-4 py-2 rounded">Save Summary</button>
+          </div>
+
+          <div className="bg-white shadow sm:rounded-lg p-6">
+            <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">Experience</h2>
+            <div className="space-y-4 mb-4">
+              {experiences.map(exp => (
+                <div key={exp.id} className="p-4 border rounded bg-gray-50">
+                  <h3 className="font-bold">{exp.job_title} at {exp.company}</h3>
+                  <p className="text-sm text-gray-600">{exp.responsibilities}</p>
+                </div>
+              ))}
+            </div>
+            <div className="border-t pt-4 grid grid-cols-2 gap-4">
+              <input type="text" placeholder="Company" value={newExp.company} onChange={(e) => setNewExp({...newExp, company: e.target.value})} className="p-2 border rounded" />
+              <input type="text" placeholder="Job Title" value={newExp.job_title} onChange={(e) => setNewExp({...newExp, job_title: e.target.value})} className="p-2 border rounded" />
+              <textarea placeholder="Responsibilities" value={newExp.responsibilities} onChange={(e) => setNewExp({...newExp, responsibilities: e.target.value})} className="col-span-2 p-2 border rounded" />
+              <button onClick={handleAddExperience} className="bg-green-600 text-white px-4 py-2 rounded w-48">Add Experience</button>
+            </div>
+          </div>
+
+          <div className="bg-white shadow sm:rounded-lg p-6">
+            <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">Education</h2>
+            <div className="space-y-4 mb-4">
+              {educations.map(edu => (
+                <div key={edu.id} className="p-4 border rounded bg-gray-50">
+                  <h3 className="font-bold">{edu.degree}</h3>
+                  <p className="text-sm text-gray-600">{edu.institution}</p>
+                </div>
+              ))}
+            </div>
+            <div className="border-t pt-4 grid grid-cols-2 gap-4">
+              <input type="text" placeholder="Institution" value={newEdu.institution} onChange={(e) => setNewEdu({...newEdu, institution: e.target.value})} className="p-2 border rounded" />
+              <input type="text" placeholder="Degree" value={newEdu.degree} onChange={(e) => setNewEdu({...newEdu, degree: e.target.value})} className="p-2 border rounded" />
+              <button onClick={handleAddEducation} className="bg-green-600 text-white px-4 py-2 rounded w-48">Add Education</button>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="bg-white shadow sm:rounded-lg p-6 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 relative">
