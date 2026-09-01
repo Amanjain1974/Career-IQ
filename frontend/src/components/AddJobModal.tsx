@@ -13,7 +13,9 @@ const AddJobModal: React.FC<AddJobModalProps> = ({ onClose, onSuccess }) => {
     role: '',
     location: '',
     description: '',
-    work_mode: 'Remote'
+    work_mode: 'Remote',
+    salary_min: '',
+    salary_max: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -89,6 +91,24 @@ const AddJobModal: React.FC<AddJobModalProps> = ({ onClose, onSuccess }) => {
                 <option value="Hybrid">Hybrid</option>
                 <option value="On-site">On-site</option>
               </select>
+            </div>
+          </div>
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">Min Salary (Optional)</label>
+              <input 
+                type="number" name="salary_min"
+                value={formData.salary_min} onChange={handleChange}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">Max Salary (Optional)</label>
+              <input 
+                type="number" name="salary_max"
+                value={formData.salary_max} onChange={handleChange}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              />
             </div>
           </div>
           <div>

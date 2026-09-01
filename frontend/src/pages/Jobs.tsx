@@ -55,6 +55,11 @@ export default function Jobs() {
                         Safe
                       </span>
                     )}
+                    {job.salary_min && (
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        ${(job.salary_min / 1000).toFixed(0)}k {job.salary_max ? `- ${(job.salary_max / 1000).toFixed(0)}k` : '+'}
+                      </span>
+                    )}
                     <button 
                       onClick={(e) => { e.stopPropagation(); setSummarizeJob(job); }}
                       className="px-2 inline-flex text-xs leading-5 font-semibold rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700"

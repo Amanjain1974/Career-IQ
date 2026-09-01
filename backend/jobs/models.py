@@ -15,8 +15,10 @@ class Job(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Scam Detection
-    risk_score = models.CharField(max_length=20, default='LOW RISK') # LOW, MEDIUM, HIGH
+    risk_score = models.CharField(max_length=20, default='LOW RISK')
     risk_reason = models.TextField(blank=True)
+    salary_min = models.IntegerField(null=True, blank=True)
+    salary_max = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.role} at {self.company}"
