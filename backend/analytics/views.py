@@ -22,6 +22,16 @@ def dashboard_stats(request):
     from django.db.models import Avg
     avg_score = applications.aggregate(Avg('match_score'))['match_score__avg'] or 0
     
+    # Weekly goals
+    from django.utils import timezone
+    import datetime
+    one_week_ago = timezone.now() - datetime.timedelta(days=7)
+    apps_this_week = applications.filter(applied_date__gte=one_week_ago).count()
+    
+    from candidates.models import CandidateProfile
+    profile = CandidateProfile.objects.filter(user=request.user).first()
+    weekly_goal = profile.weekly_application_goal if profile else 10
+    
     return Response({
         "total_applications": total_apps,
         "interviews": interviews,
@@ -29,5 +39,7 @@ def dashboard_stats(request):
         "offers": offers,
         "interview_rate": round(interview_rate, 2),
         "most_common_skill_gaps": ["Airflow", "Kafka", "Kubernetes"],
-        "average_fit_score": round(avg_score, 1)
+        "average_fit_score": round(avg_score, 1),
+        "apps_this_week": apps_this_week,
+        "weekly_goal": weekly_goal
     })

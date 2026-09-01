@@ -12,6 +12,7 @@ export default function Settings() {
   const [linkedin, setLinkedin] = useState('');
   const [github, setGithub] = useState('');
   const [portfolio, setPortfolio] = useState('');
+  const [weeklyGoal, setWeeklyGoal] = useState<number>(10);
   const [message, setMessage] = useState('');
   const [profileMessage, setProfileMessage] = useState('');
   const { logout } = useAuth();
@@ -31,6 +32,7 @@ export default function Settings() {
         setLinkedin(data[0].linkedin_url || '');
         setGithub(data[0].github_url || '');
         setPortfolio(data[0].portfolio_url || '');
+        setWeeklyGoal(data[0].weekly_application_goal || 10);
       }
     }).catch(err => console.error("Error fetching profile", err));
   }, []);
@@ -54,7 +56,8 @@ export default function Settings() {
         target_roles: targetRoles,
         linkedin_url: linkedin,
         github_url: github,
-        portfolio_url: portfolio
+        portfolio_url: portfolio,
+        weekly_application_goal: weeklyGoal
       });
       setProfileMessage('Profile updated successfully.');
     } catch (err) {
@@ -186,6 +189,16 @@ export default function Settings() {
                 type="url" 
                 value={portfolio} 
                 onChange={e => setPortfolio(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Weekly Application Goal</label>
+              <input 
+                type="number" 
+                min="1"
+                value={weeklyGoal} 
+                onChange={e => setWeeklyGoal(parseInt(e.target.value) || 10)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
               />
             </div>

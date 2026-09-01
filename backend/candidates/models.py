@@ -14,6 +14,7 @@ class CandidateProfile(models.Model):
     linkedin_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     portfolio_url = models.URLField(blank=True)
+    weekly_application_goal = models.IntegerField(default=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

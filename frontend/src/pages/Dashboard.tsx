@@ -35,6 +35,23 @@ export default function Dashboard() {
   return (
     <div>
       <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Dashboard</h1>
+      
+      {/* Weekly Goal Progress */}
+      <div className="mt-6 bg-white dark:bg-gray-800 shadow rounded-lg p-5">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">Weekly Application Goal</h2>
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">
+            {stats.apps_this_week} / {stats.weekly_goal}
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+          <div 
+            className="bg-indigo-600 h-2.5 rounded-full" 
+            style={{ width: `${Math.min((stats.apps_this_week / stats.weekly_goal) * 100, 100)}%` }}
+          ></div>
+        </div>
+      </div>
+
       <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg p-5">
           <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Applications</dt>
