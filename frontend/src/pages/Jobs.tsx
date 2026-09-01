@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { getJobs } from '../api';
+import { useNavigate } from 'react-router-dom';
+import { getJobs, createApplication } from '../api';
 import AddJobModal from '../components/AddJobModal';
 import SummarizeJobModal from '../components/SummarizeJobModal';
 
 export default function Jobs() {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [summarizeJob, setSummarizeJob] = useState<any>(null);
@@ -59,6 +61,23 @@ export default function Jobs() {
                     >
                       Summarize AI
                     </button>
+                    {!job.is_applied && (
+                      <button 
+                        onClick={async (e) => { 
+                          e.stopPropagation(); 
+                          try {
+                            await createApplication({ job: job.id, status: 'Saved' });
+                            fetchJobs();
+                            navigate('/applications');
+                          } catch (err) {
+                            alert('Failed to start application');
+                          }
+                        }}
+                        className="px-2 inline-flex text-xs leading-5 font-semibold rounded bg-green-600 text-white hover:bg-green-700"
+                      >
+                        Start Application
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="mt-2 sm:flex sm:justify-between">
