@@ -30,12 +30,18 @@ const AddJobModal: React.FC<AddJobModalProps> = ({ onClose, onSuccess }) => {
       // Create job
       const newJob = await createJob(formData);
       
+      // Get AI Match Score
+      const { matchJob } = await import('../api');
+      const matchData = await matchJob(newJob.id);
+      
       // Also automatically track it for the user
       await createApplication({
         job: newJob.id,
         status: 'Saved',
-        match_score: Math.floor(Math.random() * (99 - 75 + 1)) + 75 // Mock random match score
+        match_score: matchData.match_score
       });
+      
+      alert(`AI Match Score: ${matchData.match_score}%\n\n${matchData.reason}`);
       
       onSuccess();
     } catch (error) {

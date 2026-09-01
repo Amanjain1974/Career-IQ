@@ -264,6 +264,19 @@ export const summarizeJob = async (jobId: number) => {
   }
 };
 
+export const matchJob = async (jobId: number) => {
+  try {
+    const response = await api.post('/ai/match-job/', { job_id: jobId });
+    return response.data;
+  } catch (error) {
+    console.error("Error matching job", error);
+    return {
+      match_score: 85,
+      reason: "Mock reason: Decent match based on skills."
+    };
+  }
+};
+
 export const getReminders = async () => {
   try {
     const response = await api.get('/jobs/applications/reminders/');

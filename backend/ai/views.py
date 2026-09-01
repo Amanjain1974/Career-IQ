@@ -94,3 +94,28 @@ def summarize_job(request):
     return Response({
         "summary": summary
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def match_job(request):
+    job_id = request.data.get('job_id')
+    from jobs.models import Job
+    from django.shortcuts import get_object_or_404
+    job = get_object_or_404(Job, id=job_id)
+    
+    from candidates.models import CandidateProfile
+    profile = CandidateProfile.objects.filter(user=request.user).first()
+    
+    # Mock AI logic: generate a score between 75 and 99
+    import random
+    base_score = 75
+    if profile and profile.target_roles and job.role.lower() in profile.target_roles.lower():
+        base_score = 90
+        
+    score = base_score + random.randint(0, 9)
+    reason = f"Your background aligns well with {job.company}'s requirements." if score >= 85 else f"Some skills match, but {job.role} may require further experience."
+    
+    return Response({
+        "match_score": score,
+        "reason": reason
+    })
