@@ -66,5 +66,19 @@ class DataExportView(APIView):
             )
             data['applications'] = list(applications)
 
+        if request.query_params.get('format') == 'csv':
+            import csv
+            from django.http import HttpResponse
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="careeriq_applications.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['Company', 'Role', 'Status', 'Applied Date', 'Match Score'])
+            
+            if profile:
+                applications = Application.objects.filter(candidate=profile)
+                for app in applications:
+                    writer.writerow([app.job.company, app.job.role, app.status, app.applied_date, app.match_score])
+            return response
+
         return Response(data)
 

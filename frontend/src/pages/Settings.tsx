@@ -64,7 +64,7 @@ export default function Settings() {
 
   const handleExport = async () => {
     try {
-      const data = await exportData();
+      const data = await exportData('json');
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -75,6 +75,21 @@ export default function Settings() {
       document.body.removeChild(link);
     } catch (err) {
       alert("Failed to export data");
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const blob = await exportData('csv');
+      const url = URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'careeriq_applications.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert("Failed to export CSV");
     }
   };
 
@@ -187,12 +202,18 @@ export default function Settings() {
           <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Data Portability</h3>
           <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Download all your career data.</p>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:p-6">
+        <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:p-6 flex space-x-4">
           <button 
             onClick={handleExport}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
           >
-            Export My Data (.json)
+            Export All Data (.json)
+          </button>
+          <button 
+            onClick={handleExportCSV}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          >
+            Export Applications (.csv)
           </button>
         </div>
       </div>

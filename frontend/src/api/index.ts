@@ -286,7 +286,11 @@ export const updateMe = async (data: any) => {
   return response.data;
 };
 
-export const exportData = async () => {
+export const exportData = async (format: string = 'json') => {
+  if (format === 'csv') {
+    const response = await api.get('/accounts/export/?format=csv', { responseType: 'blob' });
+    return response.data;
+  }
   const response = await api.get('/accounts/export/');
   return response.data;
 };
