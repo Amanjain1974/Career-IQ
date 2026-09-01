@@ -7,7 +7,9 @@ import Applications from './pages/Applications';
 import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+import React from 'react';
+
+const PrivateRoute = ({ children }: { children: React.ReactElement }) => {
   const token = localStorage.getItem('access_token');
   return token ? children : <Navigate to="/login" />;
 };
