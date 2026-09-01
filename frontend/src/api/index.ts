@@ -112,6 +112,16 @@ export const updateApplicationStatus = async (id: number, status: string) => {
   }
 };
 
+export const updateApplication = async (id: number, data: any) => {
+  try {
+    const response = await api.patch(`/jobs/applications/${id}/`, data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating application ${id}`, error);
+    throw error;
+  }
+};
+
 export const generateCoverLetter = async (jobId: number, style: string = 'professional') => {
   try {
     const response = await api.post('/ai/cover-letter/', { job_id: jobId, style });

@@ -4,6 +4,7 @@ import { getApplications, updateApplicationStatus } from '../api';
 import CoverLetterGenerator from '../components/CoverLetterGenerator';
 import ResumeTailorModal from '../components/ResumeTailorModal';
 import InterviewPrepModal from '../components/InterviewPrepModal';
+import NotesModal from '../components/NotesModal';
 
 const COLUMNS = ['Saved', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
@@ -11,7 +12,7 @@ export default function Applications() {
   const [applications, setApplications] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
   const [selectedApp, setSelectedApp] = useState<any>(null);
-  const [activeModal, setActiveModal] = useState<'cover' | 'resume' | 'interview' | null>(null);
+  const [activeModal, setActiveModal] = useState<'cover' | 'resume' | 'interview' | 'notes' | null>(null);
 
   useEffect(() => {
     getApplications().then(data => setApplications(data));
@@ -49,7 +50,7 @@ export default function Applications() {
     }
   };
 
-  const openModal = (app: any, type: 'cover' | 'resume' | 'interview') => {
+  const openModal = (app: any, type: 'cover' | 'resume' | 'interview' | 'notes') => {
     setSelectedApp(app);
     setActiveModal(type);
   };
@@ -122,6 +123,12 @@ export default function Applications() {
                                 >
                                   Prep Interview
                                 </button>
+                                <button 
+                                  onClick={() => openModal(app, 'notes')}
+                                  className="text-xs font-medium text-gray-600 hover:text-gray-800 bg-gray-100 px-2 py-1 rounded"
+                                >
+                                  Journal Notes
+                                </button>
                               </div>
                             </div>
                           )}
@@ -175,6 +182,12 @@ export default function Applications() {
                     >
                       Prep Interview
                     </button>
+                    <button 
+                      onClick={() => openModal(app, 'notes')}
+                      className="text-gray-600 hover:text-gray-900"
+                    >
+                      Journal
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -185,28 +198,51 @@ export default function Applications() {
 
       {selectedApp && activeModal === 'cover' && (
         <CoverLetterGenerator 
-          jobId={selectedApp.id}
+          applicationId={selectedApp.id}
+          jobId={selectedApp.job}
+          initialCoverLetter={selectedApp.cover_letter}
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
           onClose={closeModal}
+          onSaved={(newLetter) => {
+            setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, cover_letter: newLetter } : a));
+          }}
         />
       )}
 
       {selectedApp && activeModal === 'resume' && (
         <ResumeTailorModal 
-          jobId={selectedApp.id}
+          applicationId={selectedApp.id}
+          jobId={selectedApp.job}
+          initialResume={selectedApp.tailored_resume}
+          companyName={selectedApp.company}
+          roleTitle={selectedApp.role}
+          onClose={closeModal}
+          onSaved={(newResume) => {
+            setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, tailored_resume: newResume } : a));
+          }}
+        />
+      )}
+
+      {selectedApp && activeModal === 'interview' && (
+        <InterviewPrepModal 
+          jobId={selectedApp.job}
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
           onClose={closeModal}
         />
       )}
 
-      {selectedApp && activeModal === 'interview' && (
-        <InterviewPrepModal 
-          jobId={selectedApp.id}
+      {selectedApp && activeModal === 'notes' && (
+        <NotesModal 
+          applicationId={selectedApp.id}
+          initialNotes={selectedApp.notes}
           companyName={selectedApp.company}
           roleTitle={selectedApp.role}
           onClose={closeModal}
+          onSaved={(newNotes) => {
+            setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, notes: newNotes } : a));
+          }}
         />
       )}
     </div>

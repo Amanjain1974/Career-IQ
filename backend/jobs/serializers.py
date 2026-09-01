@@ -7,6 +7,9 @@ class JobSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    company = serializers.ReadOnlyField(source='job.company')
+    role = serializers.ReadOnlyField(source='job.role')
+
     class Meta:
         model = Application
         fields = '__all__'

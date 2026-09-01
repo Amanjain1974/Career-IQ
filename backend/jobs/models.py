@@ -30,6 +30,8 @@ class Application(models.Model):
     applied_date = models.DateField(null=True, blank=True)
     follow_up_date = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True)
+    cover_letter = models.TextField(blank=True)
+    tailored_resume = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.candidate.user.username} - {self.job.role}"
