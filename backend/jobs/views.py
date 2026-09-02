@@ -20,6 +20,13 @@ class JobViewSet(viewsets.ModelViewSet):
         match_score = 85.0
         return Response({"job": job.role, "match_score": match_score, "details": "Matches well on Python and SQL."})
 
+    @action(detail=False, methods=['get'], url_path='search_realtime')
+    def search_realtime(self, request):
+        from .services.job_aggregator import fetch_realtime_jobs
+        query = request.query_params.get('q', 'Software Engineer')
+        jobs = fetch_realtime_jobs(query)
+        return Response(jobs)
+
 class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]

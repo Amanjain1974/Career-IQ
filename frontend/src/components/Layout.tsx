@@ -1,9 +1,11 @@
-import { Outlet, Link } from 'react-router-dom';
-import { HomeIcon, UserIcon, BriefcaseIcon, DocumentTextIcon, ChartBarIcon, MoonIcon, SunIcon, CogIcon } from '@heroicons/react/24/outline';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { HomeIcon, UserIcon, BriefcaseIcon, DocumentTextIcon, ChartBarIcon, MoonIcon, SunIcon, CogIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
 import { getMe } from '../api';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Layout() {
+  const location = useLocation();
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
     return saved === 'true';
@@ -24,81 +26,114 @@ export default function Layout() {
     }
   }, [darkMode]);
 
-  return (
-    <div className={`flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors`}>
-      {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-colors">
-        <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-700">
-          <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">CareerIQ</h1>
-        </div>
-        <nav className="p-4 space-y-1">
-          <Link to="/" className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400">
-            <HomeIcon className="w-5 h-5 mr-3" />
-            Dashboard
-          </Link>
-          <Link to="/profile" className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400">
-            <UserIcon className="w-5 h-5 mr-3" />
-            Profile
-          </Link>
-          <Link to="/jobs" className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400">
-            <BriefcaseIcon className="w-5 h-5 mr-3" />
-            Jobs
-          </Link>
-          <Link to="/applications" className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400">
-            <DocumentTextIcon className="w-5 h-5 mr-3" />
-            Applications
-          </Link>
-          <Link to="/analytics" className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400">
-            <ChartBarIcon className="w-5 h-5 mr-3" />
-            Analytics
-          </Link>
-          <Link to="/settings" className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400">
-            <CogIcon className="w-5 h-5 mr-3" />
-            Settings
-          </Link>
-        </nav>
-      </aside>
+  const navItems = [
+    { name: 'Dashboard', path: '/', icon: HomeIcon },
+    { name: 'Profile', path: '/profile', icon: UserIcon },
+    { name: 'Jobs', path: '/jobs', icon: BriefcaseIcon },
+    { name: 'Applications', path: '/applications', icon: DocumentTextIcon },
+    { name: 'Analytics', path: '/analytics', icon: ChartBarIcon },
+  ];
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-8 transition-colors">
-          <div className="flex-1 max-w-xl">
-            <form action="/search" method="get" className="relative">
-              <input 
-                type="text" 
-                name="q"
-                placeholder="Search jobs, companies, notes..." 
-                className="w-full pl-4 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button type="submit" className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                🔍
-              </button>
-            </form>
+  return (
+    <div className={`flex h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200`}>
+      {/* Sidebar */}
+      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between transition-colors duration-200">
+        <div>
+          <div className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-800">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3 shadow-md shadow-indigo-500/20">
+              <BriefcaseIcon className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">CareerIQ</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <button 
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400"
-            >
-              {darkMode ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
-            </button>
+          <nav className="p-4 space-y-1.5 mt-2">
+            {navItems.map((item) => (
+              <NavLink 
+                key={item.name}
+                to={item.path} 
+                className={({isActive}) => `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}
+              >
+                <item.icon className="w-5 h-5 mr-3 flex-shrink-0" />
+                {item.name}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+        
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+          <NavLink 
+            to="/settings" 
+            className={({isActive}) => `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 mb-4 ${isActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}
+          >
+            <CogIcon className="w-5 h-5 mr-3 flex-shrink-0" />
+            Settings
+          </NavLink>
+          
+          <div className="flex items-center px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
             {user ? (
               <img 
                 src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`} 
                 alt="avatar" 
-                className="w-8 h-8 rounded-full border dark:border-gray-600"
+                className="w-9 h-9 rounded-full border border-slate-200 dark:border-slate-600 shadow-sm"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-300 font-bold">
+              <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold shadow-sm border border-indigo-200 dark:border-indigo-800/50">
                 U
               </div>
             )}
+            <div className="ml-3 flex-1 overflow-hidden">
+              <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                {user ? user.username : 'Guest'}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                {user ? user.email : 'Not logged in'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 z-10 transition-colors duration-200">
+          <div className="flex-1 max-w-xl">
+            <form action="/search" method="get" className="relative group">
+              <MagnifyingGlassIcon className="absolute left-3 top-2.5 w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+              <input 
+                type="text" 
+                name="q"
+                placeholder="Search jobs, companies, notes... (⌘K)" 
+                className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all sm:text-sm"
+              />
+            </form>
+          </div>
+          <div className="flex items-center space-x-4 pl-4">
+            <button 
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            >
+              {darkMode ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
+            </button>
           </div>
         </header>
-        <div className="p-8 dark:text-gray-100">
-          <Outlet />
+        
+        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900/50 p-8">
+          <div className="max-w-7xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="h-full"
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </main>
     </div>
   );
 }
+

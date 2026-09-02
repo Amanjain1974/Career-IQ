@@ -326,3 +326,25 @@ export const exportData = async (format: string = 'json') => {
 
 
 
+
+export const searchRealtimeJobs = async (query: string = "") => {
+  try {
+    const response = await api.get(`/jobs/jobs/search_realtime/?q=${query}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching real-time jobs", error);
+    return [];
+  }
+};
+
+
+export const loginStep1 = async (credentials: any) => {
+  const response = await axios.post('http://localhost:8000/api/accounts/login/step1/', credentials);
+  return response.data;
+};
+
+export const loginStep2 = async (data: any) => {
+  const response = await axios.post('http://localhost:8000/api/accounts/login/step2/', data);
+  return response.data;
+};
+
