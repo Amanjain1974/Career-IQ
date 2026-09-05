@@ -27,11 +27,11 @@ export default function Layout() {
   }, [darkMode]);
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: HomeIcon },
-    { name: 'Profile', path: '/profile', icon: UserIcon },
-    { name: 'Jobs', path: '/jobs', icon: BriefcaseIcon },
-    { name: 'Applications', path: '/applications', icon: DocumentTextIcon },
-    { name: 'Analytics', path: '/analytics', icon: ChartBarIcon },
+    { name: 'Dashboard', path: '/app', icon: HomeIcon },
+    { name: 'Profile', path: '/app/profile', icon: UserIcon },
+    { name: 'Jobs', path: '/app/jobs', icon: BriefcaseIcon },
+    { name: 'Applications', path: '/app/applications', icon: DocumentTextIcon },
+    { name: 'Analytics', path: '/app/analytics', icon: ChartBarIcon },
   ];
 
   return (
@@ -61,7 +61,7 @@ export default function Layout() {
         
         <div className="p-4 border-t border-slate-200 dark:border-slate-800">
           <NavLink 
-            to="/settings" 
+            to="/app/settings" 
             className={({isActive}) => `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 mb-4 ${isActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}
           >
             <CogIcon className="w-5 h-5 mr-3 flex-shrink-0" />
@@ -96,7 +96,7 @@ export default function Layout() {
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 z-10 transition-colors duration-200">
           <div className="flex-1 max-w-xl">
-            <form action="/search" method="get" className="relative group">
+            <form action="/app/search" method="get" className="relative group">
               <MagnifyingGlassIcon className="absolute left-3 top-2.5 w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
               <input 
                 type="text" 
