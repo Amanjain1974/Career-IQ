@@ -96,30 +96,36 @@ class LoginStep1View(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
         
+        # 1. Validate Password
+        # authenticate() strictly verifies both username and password.
         user = authenticate(username=username, password=password)
         if not user:
-            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            if User.objects.filter(username=username).exists():
+                return Response({"error": "Wrong password"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Invalid username"}, status=status.HTTP_401_UNAUTHORIZED)
+            
+        # 2. Check Phone Number
+        # If the user doesn't have a phone number, they can't receive an OTP.
+        phone = user.phone_number
+        if not phone or phone == "NOT_SET":
+            return Response({"error": "Unverified phone number or no phone number set. Cannot send OTP."}, status=status.HTTP_400_BAD_REQUEST)
             
         # Invalidate previous OTPs
         OTPVerification.objects.filter(user=user, is_used=False).update(is_used=True)
         
-        # Generate new OTP
+        # Generate new OTP ONLY after successful password validation
         otp_entry = OTPVerification.objects.create(user=user)
         otp_entry.generate_otp()
         
-        phone = user.phone_number or "NOT_SET"
-        
-        # Send SMS (or print to console)
-        if phone != "NOT_SET":
-            send_otp_sms(phone, otp_entry.otp_code)
-        else:
-            # For demonstration if phone is not set, we still generate it
-            send_otp_sms("NO_PHONE_NUMBER_SET", otp_entry.otp_code)
+        # 3. Send SMS and handle failure
+        sms_sent = send_otp_sms(phone, otp_entry.otp_code)
+        if not sms_sent:
+            return Response({"error": "Failed to send OTP via SMS. Please try again."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
         return Response({
-            "message": "OTP sent", 
+            "message": "OTP sent successfully", 
             "username": user.username,
-            "has_phone": phone != "NOT_SET"
+            "has_phone": True
         })
 
 class LoginStep2View(APIView):
@@ -135,17 +141,21 @@ class LoginStep2View(APIView):
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
             
+        # Tie the submitted OTP explicitly to the user to prevent spoofing
         otp_entry = OTPVerification.objects.filter(user=user, otp_code=otp_code, is_used=False).last()
         if not otp_entry or not otp_entry.is_valid():
-            return Response({"error": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Wrong or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
             
         # Mark used
         otp_entry.is_used = True
         otp_entry.save()
         
-        # Save phone if provided during this step
+        # Save phone if provided during this step (though step 1 requires it now)
         if phone_number and not user.phone_number:
             user.phone_number = phone_number
+        
+        # Mark phone as verified upon successful OTP login
+        if not user.is_phone_verified:
             user.is_phone_verified = True
             user.save()
             

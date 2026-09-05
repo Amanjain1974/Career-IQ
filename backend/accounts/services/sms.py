@@ -1,42 +1,32 @@
 import os
 import requests
+import logging
+from django.conf import settings
 
-def send_otp_sms(phone_number, otp_code):
+logger = logging.getLogger(__name__)
+
+def send_otp_sms(phone_number: str, otp_code: str) -> bool:
     """
-    Sends an OTP code via RapidAPI SMS service.
-    Note: Since RapidAPI has many SMS providers, you must ensure the 'url' 
-    and 'x-rapidapi-host' below match the specific SMS API you subscribed to.
+    Sends an OTP code via MSG91 SMS service.
     """
-    api_key = os.getenv("RAPIDAPI_KEY") or "1c9caa52e4mshe6639a59f512fa8p18cf46jsn746663bf3aca"
-    
-    # We print the OTP to the console so you can test login even if the SMS API call fails.
-    print(f"\n======================================")
-    print(f"MOCK SMS: Sending OTP {otp_code} to {phone_number}")
-    print(f"======================================\n")
-
-    if not api_key:
-        return False
-        
-    url = "https://twilio-sms.p.rapidapi.com/2010-04-01/Accounts/YOUR_ACCOUNT_SID/Messages.json"
-    
-    payload = {
-        "To": phone_number,
-        "From": "+1234567890", # Replace with your sender ID
-        "Body": f"Your CareerIQ verification code is: {otp_code}"
-    }
-    
-    headers = {
-        "content-type": "application/x-www-form-urlencoded",
-        "X-RapidAPI-Key": api_key,
-        "X-RapidAPI-Host": "twilio-sms.p.rapidapi.com"
-    }
-
-    try:
-        # response = requests.post(url, data=payload, headers=headers)
-        # response.raise_for_status()
-        
-        # Simulating success for now, since we don't know the exact endpoint
+    if getattr(settings, 'DEBUG', False):
+        print(f"\n======================================")
+        print(f"MOCK SMS: Sending OTP {otp_code} to {phone_number}")
+        print(f"======================================\n")
         return True
-    except Exception as e:
-        print(f"Failed to send SMS: {e}")
+
+    url = "https://control.msg91.com/api/v5/otp"
+    params = {
+        "authkey": settings.MSG91_AUTH_KEY,
+        "mobile": phone_number,
+        "otp": otp_code,
+        "template_id": settings.MSG91_TEMPLATE_ID,
+    }
+    
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        # Note: The prompt asks to return whether status code is 200
+        return response.status_code == 200
+    except requests.exceptions.RequestException as e:
+        logger.error(f"MSG91 SMS failure for {phone_number}: {e}")
         return False

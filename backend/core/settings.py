@@ -10,6 +10,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-k*h+bg)!1%fi+ae@#yb&6
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
+MSG91_AUTH_KEY = os.environ.get('MSG91_AUTH_KEY', '')
+MSG91_TEMPLATE_ID = os.environ.get('MSG91_TEMPLATE_ID', '')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
