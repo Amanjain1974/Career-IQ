@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Job, Application
 from .serializers import JobSerializer, ApplicationSerializer
 from candidates.models import CandidateProfile
+from .services.job_aggregator import search_jobs
 
 class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobSerializer
@@ -20,12 +21,30 @@ class JobViewSet(viewsets.ModelViewSet):
         match_score = 85.0
         return Response({"job": job.role, "match_score": match_score, "details": "Matches well on Python and SQL."})
 
-    @action(detail=False, methods=['get'], url_path='search_realtime')
+    @action(detail=False, methods=["get"], url_path="search_realtime")
     def search_realtime(self, request):
-        from .services.job_aggregator import fetch_realtime_jobs
-        query = request.query_params.get('q', 'Software Engineer')
-        jobs = fetch_realtime_jobs(query)
-        return Response(jobs)
+        query = request.query_params.get("query", "").strip()
+        location = request.query_params.get("location", "").strip()
+        page = request.query_params.get("page", "1")
+
+        try:
+            page = int(page)
+        except ValueError:
+            page = 1
+
+        if not query:
+            return Response(
+                {"success": False, "results": [], "error": "Query parameter 'query' is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        result = search_jobs(query=query, location=location, page=page)
+
+        if not result["success"]:
+            # Distinguish "no results" (still success) from an actual failure
+            return Response(result, status=status.HTTP_502_BAD_GATEWAY)
+
+        return Response(result, status=status.HTTP_200_OK)
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
